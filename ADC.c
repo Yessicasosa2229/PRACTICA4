@@ -1,4 +1,4 @@
-
+1
 #include "lib/include.h"
 
 extern void Configura_Reg_ADC0(void)
@@ -127,7 +127,7 @@ interrupciones.
     ADC1->ACTSS = (1<<3) | (0<<2) | (0<<1) | (0<<0); //SOLO ACTIVO EL SEC QUE ME TOCA 
     ADC1->PSSI |= (1<<3); //Para inicializar el muestreo en el secuenciador 
 }
-
+/*
 extern void ADC0_InSeq2(uint16_t *Result){
 
     //ADC Processor Sample Sequence Initiate (ADCPSSI)
@@ -138,6 +138,81 @@ extern void ADC0_InSeq2(uint16_t *Result){
        printChar('A');
        ADC0->ISC = 0x0004;  //Conversion finalizada
 
+}*/
+//MOD0 SEC0 Y SEC2  MOD1 SEC3
+extern void Lec_ADC(uint16_t data[])
+{
+    //Selector 0
+    //ADC0->PSSI |= (1<<0);
+    delay_ms(1);
+
+    while((ADC0->RIS&0x01)==0); // espera al convertidor
+    delay_ms(1);
+    while(ADC0->SSOP0&(1<<0)==(1<<0))
+    data[0] = ADC0->SSFIFO0&0xFFF; //  Leer  el resultado almacenado en la pila2
+    delay_ms(1);
+    while(ADC0->SSOP0&(1<<4)==(1<<4))
+    data[1] = ADC0->SSFIFO0&0xFFF;
+    delay_ms(1);
+    while(ADC0->SSOP0&(1<<8)==(1<<8))
+    data[2] = ADC0->SSFIFO0&0xFFF;  
+    delay_ms(1);
+  
+    ADC0->ISC |= (1<<0);  //Conversion finalizada
+    delay_ms(1);
+
+    //Selector 2
+    //ADC0->PSSI |= (1<<2);
+    delay_ms(1);
+
+    while((ADC0->RIS&0x02)==0); // espera al convertidor
+    delay_ms(1);
+    while(ADC0->SSOP2&(1<<0)==(1<<0))
+    data[3] = ADC0->SSFIFO2&0xFFF; //  Leer  el resultado almacenado en la pila2
+    delay_ms(1);
+    while(ADC0->SSOP2&(1<<4)==(1<<4))
+    data[4] = ADC0->SSFIFO2&0xFFF;
+    delay_ms(1);
+    while(ADC0->SSOP2&(1<<8)==(1<<8))
+    data[5] = ADC0->SSFIFO2&0xFFF;  
+    delay_ms(1);
+  
+    ADC0->ISC = (1<<2);  //Conversion finalizada
+    delay_ms(1);
+   
+   //Selector 3
+    //ADC1->PSSI = (1<<3);
+    delay_ms(1);
+
+    while((ADC1->RIS&0x04)==0); // espera al convertidor
+    delay_ms(1);
+    while(ADC1->SSOP3&(1<<0)==(1<<0))
+    data[0] = ADC1->SSFIFO3&0xFFF; //  Leer  el resultado almacenado en la pila2
+    delay_ms(1);
+    while(ADC1->SSOP3&(1<<4)==(1<<4))
+    data[1] = ADC1->SSFIFO3&0xFFF;
+    delay_ms(1);
+    while(ADC1->SSOP3&(1<<8)==(1<<8))
+    data[2] = ADC1->SSFIFO3&0xFFF;  
+    delay_ms(1);
+  
+    ADC1->ISC = (1<<3);  //Conversion finalizada
+    delay_ms(1);
+
+  
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
